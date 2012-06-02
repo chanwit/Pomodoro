@@ -85,10 +85,11 @@ public class Pomodoro extends MIDlet {
         a.setTimeout(Alert.FOREVER);
         display.setCurrent(a);
     }
+        
 }
 
 class CanvasCounter extends Canvas implements CommandListener {
-
+    
     private final Command START_CMD = new Command("Start", Command.EXIT, 0);
     private final Command STOP_CMD = new Command("Stop", Command.EXIT, 0);
     private final Command EXIT_CMD = new Command("Exit", Command.SCREEN, 2);
@@ -108,6 +109,7 @@ class CanvasCounter extends Canvas implements CommandListener {
     
     // default minutes to count
     private int minutes = 25;
+    private boolean inPomodoro = false;
 
     public CanvasCounter(Pomodoro midlet) {
 
@@ -146,6 +148,17 @@ class CanvasCounter extends Canvas implements CommandListener {
         setCommandListener(this);
     }
 
+    protected void keyPressed(int keyCode) {
+        String keyValue = getKeyName(keyCode);        
+        if(keyValue.toUpperCase().equals("SELECT") && this.isShown()) {
+            if(!inPomodoro) {
+                circulateMinutes();
+                midlet.resetCounter();
+                repaint();       
+            }
+        }
+    }    
+    
     protected void paint(Graphics g) {
         drawPomodoro(g);
     }
@@ -154,7 +167,7 @@ class CanvasCounter extends Canvas implements CommandListener {
         if (c == EXIT_CMD) {
             setCommandListener(null);
             midlet.exitMIDlet();
-        } else if (c == CIR_MINS_CMD) {
+        } else if (c == CIR_MINS_CMD && !inPomodoro) {
             circulateMinutes();
             midlet.resetCounter();
             repaint();
@@ -174,6 +187,7 @@ class CanvasCounter extends Canvas implements CommandListener {
         removeCommand(START_CMD);
         addCommand(STOP_CMD);
         setCommandListener(this);
+        inPomodoro = true;
     }
     
     private void stopTimer(boolean normal) {
@@ -194,6 +208,7 @@ class CanvasCounter extends Canvas implements CommandListener {
         addCommand(START_CMD);
         setCommandListener(this);
         repaint();
+        inPomodoro = false;
     }    
 
     private void stopTimer() {
@@ -202,7 +217,7 @@ class CanvasCounter extends Canvas implements CommandListener {
 
     private void drawPomodoro(Graphics g) {
         // Paint red background
-        g.setColor(255, 0, 0);
+        g.setColor(138, 8, 8);
         g.fillRect(0, 0, getWidth(), getHeight());
 
         // Draw scale of numbers
