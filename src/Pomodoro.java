@@ -37,7 +37,7 @@ public class Pomodoro extends MIDlet {
     // private static final int MINUTES = 25;
     // Total of pixels in X minutes
     // private static final int COUNTER_LIMIT = PIXEL_WIDTH * MINUTES;
-    private static final int VIBRATION_TIME = 1300;
+    private static final int VIBRATION_TIME = 1500;
 
     public Pomodoro() {
         display = Display.getDisplay(this);
@@ -76,8 +76,11 @@ public class Pomodoro extends MIDlet {
         return counter;
     }
 
-    public void vibrate() {
-        display.getDisplay(this).vibrate(VIBRATION_TIME);
+    public void signal() {
+        boolean ok = Display.getDisplay(this).flashBacklight(VIBRATION_TIME);
+        if(!ok) {
+            // TODO
+        }
     }
 
     public void showException(Exception e) {
@@ -100,6 +103,8 @@ class CanvasCounter extends Canvas implements CommandListener {
     private Image image;
     private Image layout;
     private Image pointer;
+    private Image pointer_stop;
+    
     // Define interval in milliseconds between screen updates
     // 1 minute = 60000 milliseconds (You must know it!)
     private static final int INTERVAL = 60000;
@@ -112,13 +117,13 @@ class CanvasCounter extends Canvas implements CommandListener {
     private boolean inPomodoro = false;
 
     public CanvasCounter(Pomodoro midlet) {
-
         this.midlet = midlet;
 
         try {
             image = Image.createImage("/background.png");
             layout = Image.createImage("/layout.png");
             pointer = Image.createImage("/pointer.png");
+            pointer_stop = Image.createImage("/pointer_stop.png");
         } catch (Exception e) {
         }
 
@@ -259,7 +264,7 @@ class CanvasCounter extends Canvas implements CommandListener {
                     midlet.showException(e);
                     return;
                 }
-                midlet.vibrate();
+                // midlet.signal();
                 stopTimer(true);
             }
         }
